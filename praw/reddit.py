@@ -437,9 +437,14 @@ class Reddit:
         self._read_only_core = session(read_only_authorizer)
 
         if self.config.username and self.config.password:
-            script_authorizer = ScriptAuthorizer(
-                authenticator, self.config.username, self.config.password
-            )
+            if self.config.otp_secret:
+                script_authorizer = ScriptAuthorizer(
+                    authenticator, self.config.username, self.config.password, self.config.otp_secret
+                )
+            else:
+                script_authorizer = ScriptAuthorizer(
+                    authenticator, self.config.username, self.config.password
+                )
             self._core = self._authorized_core = session(script_authorizer)
         elif self.config.refresh_token:
             authorizer = Authorizer(authenticator, self.config.refresh_token)
